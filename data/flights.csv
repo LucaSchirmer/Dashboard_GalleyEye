@@ -1,0 +1,5 @@
+flight_id,flight_number,origin_iata,destination_iata,departure_date,departure_period,passenger_count
+FRA-HND-2026-07-04-GE101,GE101,FRA,HND,2026-07-04,Day,714
+FRA-HND-2026-07-18-GE101,GE101,FRA,HND,2026-07-18,Night,756
+HND-FRA-2026-07-08-GE102,GE102,HND,FRA,2026-07-08,Day,732
+HND-FRA-2026-07-22-GE102,GE102,HND,FRA,2026-07-22,Night,687

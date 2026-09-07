@@ -1,0 +1,20 @@
+item_id,display_name,category,portion_mass_kg,unit_cost_eur,binary_consumption
+chicken_rice_vegetables,Chicken–Rice–Vegetables,Main Course,0.34,5.2,false
+fish_rice_vegetables,Fish–Rice–Vegetables,Main Course,0.33,5.8,false
+salad,Salad,Main Course,0.25,4.1,false
+wrap,Wrap,Main Course,0.24,3.8,false
+bread_roll,Bread Roll,Side Dish,0.06,0.65,false
+standard_side_salad,Standard Side Salad,Side Dish,0.12,1.5,false
+chocolate_cake,Chocolate Cake,Dessert,0.1,1.8,false
+vanilla_pudding_fruit,Vanilla Pudding with Fruit,Dessert,0.13,1.65,false
+fruit_salad,Fruit Salad,Dessert,0.12,1.7,false
+cola,Cola,Beverage,0.33,1.1,true
+orange_juice,Orange Juice,Beverage,0.25,1.05,true
+water,Water,Beverage,0.5,0.55,true
+coffee,Coffee,Beverage,0.2,0.7,true
+tea,Tea,Beverage,0.2,0.65,true
+butter,Butter,Accompaniment,0.01,0.18,true
+cherry_jam,Cherry Jam,Accompaniment,0.02,0.22,true
+plum_jam,Plum Jam,Accompaniment,0.02,0.22,true
+honey,Honey,Accompaniment,0.02,0.25,true
+cookie,Cookie,Snack,0.04,0.6,true

@@ -1,0 +1,13 @@
+assumption_key,scope,value,unit,description
+quantity_safety_buffer_pct,global,10,%,Simulated buffer above expected demand.
+service_rate_reduction_threshold_pct,global,80,%,Service-rate threshold for quantity review.
+low_consumption_threshold_pct,global,50,%,Consumption Estimate threshold for a larger portion reduction.
+moderate_consumption_threshold_pct,global,75,%,Upper threshold for a moderate portion reduction.
+low_consumption_portion_reduction_pct,global,25,%,Suggested reduction when average consumption is low.
+moderate_consumption_portion_reduction_pct,global,10,%,Suggested reduction when average consumption is moderate.
+maximum_simulated_portion_reduction_pct,global,90,%,Prototype simulation bound only; not an operationally validated minimum portion.
+minimum_consumption_observations,global,10,count,Minimum group observations for portion evidence.
+fuel_price_eur_per_liter,global,0.8,EUR/L,Simulated planning fuel price.
+fuel_liters_per_kg_carried,FRA-HND,0.35,L/kg,Simulated fuel factor for FRA–HND.
+fuel_liters_per_kg_carried,HND-FRA,0.33,L/kg,Simulated fuel factor for HND–FRA.
+icao_corsia_jet_a_direct_co2_v1,global,2.528,kg CO2/L fuel,"ICAO Annex 16 Vol IV (2nd ed., July 2023): 3.16 kg CO2/kg Jet-A times ICAO standard density 0.8 kg/L; direct fuel combustion only, excluding lifecycle and non-CO2 effects."
