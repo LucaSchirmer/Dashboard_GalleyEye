@@ -25,9 +25,10 @@ NAVY, BLUE, SKY, TEAL, AMBER, RED, INK, MUTED, BG = (
     "#172033", "#64748B", "#F8FAFC",
 )
 SIDEBAR_BLUE = "#0F172A"
-SIDEBAR_HOVER = "#1E293B"
-SIDEBAR_SELECTED = "#1D4ED8"
+SIDEBAR_HOVER = "#25334A"
+SIDEBAR_SELECTED = "#2563EB"
 SIDEBAR_FOREGROUND = "#F8FAFC"
+SIDEBAR_MUTED = "#CBD5E1"
 STATUS_COLORS = {"Consider both": NAVY, "Reduce loaded quantity": BLUE,
                  "Reduce portion size": TEAL, "Maintain": MUTED,
                  "Insufficient evidence": RED}
@@ -78,6 +79,7 @@ DASHBOARD_STYLES = f"""
   background:{SIDEBAR_BLUE};border-right:1px solid rgba(148,163,184,.18);
   color:{SIDEBAR_FOREGROUND};box-shadow:12px 0 30px rgba(15,23,42,.12)
 }}
+[data-testid="stSidebarUserContent"] {{padding:2rem 1.25rem 1.5rem}}
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3,
@@ -87,31 +89,40 @@ DASHBOARD_STYLES = f"""
 [data-testid="stSidebar"] svg,
 [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {{color:{SIDEBAR_FOREGROUND}}}
 [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] > p {{color:{SIDEBAR_FOREGROUND}}}
-[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {{opacity:.72}}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {{color:{SIDEBAR_MUTED};opacity:1}}
 [data-testid="stSidebar"] hr {{border-color:rgba(255,255,255,.16)}}
-.st-key-nav [role="radiogroup"] {{gap:7px}}
+.sidebar-brand {{padding:.15rem .15rem 1.15rem}}
+.sidebar-brand-name {{color:#FFFFFF;font-size:1.65rem;font-weight:850;letter-spacing:-.025em;line-height:1.1}}
+.sidebar-brand-subtitle {{color:{SIDEBAR_MUTED};font-size:.84rem;line-height:1.45;margin-top:.45rem}}
+.sidebar-section-label {{color:#93C5FD;font-size:.7rem;font-weight:800;letter-spacing:.14em;
+  margin:.2rem .15rem .55rem;text-transform:uppercase}}
+.st-key-nav [role="radiogroup"] {{gap:7px;width:100%}}
 .st-key-nav [role="radiogroup"] label {{
-  position:relative;padding:11px 13px;border:1px solid transparent;border-radius:9px;
+  position:relative;display:flex;width:100%;min-height:46px;align-items:center;padding:11px 13px;
+  border:1px solid rgba(148,163,184,.12);border-radius:10px;background:rgba(255,255,255,.025);
   transition:background-color .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease;
   cursor:pointer
 }}
-.st-key-nav [role="radiogroup"] label p {{color:{SIDEBAR_FOREGROUND};font-weight:600}}
+.st-key-nav [role="radiogroup"] label p,
+.st-key-nav [role="radiogroup"] label [data-testid="stMarkdownContainer"] p {{
+  color:{SIDEBAR_FOREGROUND} !important;font-size:.94rem;font-weight:650;line-height:1.25;margin:0
+}}
 .st-key-nav [role="radiogroup"] label:hover {{
-  background:{SIDEBAR_HOVER};border-color:rgba(147,197,253,.28);transform:translateX(4px);
+  background:{SIDEBAR_HOVER};border-color:rgba(147,197,253,.42);transform:translateX(3px);
   box-shadow:0 5px 14px rgba(0,0,0,.22)
 }}
 .st-key-nav [role="radiogroup"] label:has(input:checked),
 .st-key-nav [role="radiogroup"] label:has([aria-checked="true"]) {{
-  background:{SIDEBAR_SELECTED};border-color:rgba(191,219,254,.4);
-  box-shadow:inset 4px 0 0 #93C5FD,0 7px 18px rgba(0,0,0,.28);transform:translateX(2px)
+  background:{SIDEBAR_SELECTED};border-color:#60A5FA;
+  box-shadow:inset 4px 0 0 #BFDBFE,0 7px 18px rgba(0,0,0,.28);transform:translateX(2px)
 }}
 .st-key-nav [role="radiogroup"] label:has(input:checked) p,
 .st-key-nav [role="radiogroup"] label:has([aria-checked="true"]) p {{color:#FFFFFF;font-weight:800}}
 .st-key-nav [role="radiogroup"] label:focus-within {{outline:3px solid #93C5FD;outline-offset:2px}}
+.st-key-nav [role="radiogroup"] label > div:first-child {{flex:0 0 auto}}
+.st-key-nav [role="radiogroup"] input[type="radio"] {{accent-color:#BFDBFE}}
 [data-testid="stSidebar"] [data-baseweb="select"] *,
-[data-testid="stSidebar"] [data-baseweb="tag"] * {{color:{INK}}}
-.st-key-nav label[data-baseweb="radio"] > div:first-child,
-.st-key-nav label[data-baseweb="radio"] input[type="radio"] + div {{display:none}}
+[data-testid="stSidebar"] [data-baseweb="tag"] * {{color:#FFF;}}
 @media (max-width: 900px) {{
   [data-testid="stHorizontalBlock"] {{flex-wrap:wrap;gap:1rem}}
   [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {{
@@ -189,7 +200,7 @@ def assumptions_panel(bundle):
         shown = bundle.assumptions.copy()
         shown["value"] = shown.value.map(lambda x: f"{x:g}")
         st.dataframe(shown[["assumption_key", "scope", "value", "unit", "description"]],
-                     hide_index=True, width="stretch")
+                     hide_index=True, use_container_width=True)
 
 
 def priority_cards(bundle, fid, limit=3, show_co2_effect=False):
@@ -215,11 +226,10 @@ def priority_cards(bundle, fid, limit=3, show_co2_effect=False):
                 if row.portion_reduction_pct:
                     actions.append(f"Reduce portion by <b>{row.portion_reduction_pct:.0f}%</b>")
                 st.markdown(f'<div class="priority-action">{" · ".join(actions)}</div>', unsafe_allow_html=True)
-                effect_columns = st.columns(3 if show_co2_effect else 2)
-                effect_columns[0].metric("Weight effect", f"{row.combined_weight_saving_kg:.1f} kg")
-                effect_columns[1].metric("Fuel effect", f"{row.estimated_fuel_saving_l:.1f} L")
+                st.metric("Weight effect", f"{row.combined_weight_saving_kg:.1f} kg")
+                st.metric("Fuel effect", f"{row.estimated_fuel_saving_l:.1f} L")
                 if show_co2_effect:
-                    effect_columns[2].metric(
+                    st.metric(
                         "Simulated direct CO₂ effect",
                         f"{row.simulated_planning_direct_co2_effect_kg:.1f} kg",
                         help="Planning estimate for direct jet-fuel combustion only; not measured or realized and not a lifecycle estimate.",
@@ -275,14 +285,14 @@ def render_flight_detail(bundle, fid, role, show_co2_effect=False):
                                "Units": [items.loaded_quantity.sum(), items.served_quantity.sum(),
                                          (items.served_quantity * items.average_consumed_pct.fillna(0) / 100).sum()]})
         fig = go.Figure(go.Funnel(y=totals.Stage, x=totals.Units, textinfo="value+percent initial", marker=dict(color=[NAVY, BLUE, TEAL])))
-        st.plotly_chart(styled_figure(fig, 390), width="stretch", key=f"flow_{fid}")
+        st.plotly_chart(styled_figure(fig, 390), use_container_width=True, key=f"flow_{fid}")
         st.caption("Estimated consumed units are an analytical equivalent derived from Consumption Estimates; they are not physical item counts.")
     with tab_consumption:
         consume = items.dropna(subset=["average_consumed_pct"]).sort_values("average_consumed_pct")
         fig = px.bar(consume, x="average_consumed_pct", y="display_name", orientation="h", color="average_consumed_pct",
                      color_continuous_scale=[RED, AMBER, TEAL], labels={"average_consumed_pct": "Average consumed (%)", "display_name": ""})
         fig.update_layout(coloraxis_showscale=False)
-        st.plotly_chart(styled_figure(fig, 540), width="stretch", key=f"consumption_{fid}")
+        st.plotly_chart(styled_figure(fig, 540), use_container_width=True, key=f"consumption_{fid}")
     with tab_impact:
         waste = items.assign(total_waste_kg=lambda d: d.unserved_mass_kg + d.consumption_waste_kg.fillna(0)).sort_values("total_waste_kg", ascending=False)
         waste["Cumulative share"] = waste.total_waste_kg.cumsum() / waste.total_waste_kg.sum() * 100
@@ -290,7 +300,7 @@ def render_flight_detail(bundle, fid, role, show_co2_effect=False):
         fig.add_bar(x=waste.display_name, y=waste.total_waste_kg, name="Waste mass", marker_color=BLUE)
         fig.add_scatter(x=waste.display_name, y=waste["Cumulative share"], name="Cumulative share", yaxis="y2", line=dict(color=AMBER, width=3))
         fig.update_layout(yaxis_title="Waste mass (kg)", yaxis2=dict(title="Cumulative share (%)", overlaying="y", side="right", range=[0, 105]))
-        st.plotly_chart(styled_figure(fig, 430), width="stretch", key=f"pareto_{fid}")
+        st.plotly_chart(styled_figure(fig, 430), use_container_width=True, key=f"pareto_{fid}")
 
 
 def render_item_analysis(bundle, fid, role):
@@ -305,7 +315,7 @@ def render_item_analysis(bundle, fid, role):
         return
     load = filtered.melt("display_name", value_vars=["loaded_quantity", "served_quantity"], var_name="Series", value_name="Units")
     load.Series = load.Series.map({"loaded_quantity": "Loaded", "served_quantity": "Served"})
-    st.plotly_chart(styled_figure(px.bar(load, x="display_name", y="Units", color="Series", barmode="group", color_discrete_sequence=[NAVY, BLUE])), width="stretch", key=f"item_load_{fid}")
+    st.plotly_chart(styled_figure(px.bar(load, x="display_name", y="Units", color="Series", barmode="group", color_discrete_sequence=[NAVY, BLUE])), use_container_width=True, key=f"item_load_{fid}")
     matrix = filtered.dropna(subset=["average_consumed_pct", "service_rate_pct"])
     fig = px.scatter(matrix, x="service_rate_pct", y="average_consumed_pct", size="food_value_waste_eur", color="category", hover_name="display_name",
                      labels={"service_rate_pct": "Service rate (%)", "average_consumed_pct": "Average consumed (%)"})
@@ -318,12 +328,12 @@ def render_item_analysis(bundle, fid, role):
                   annotation_text=f"Low {low_threshold:g}%")
     fig.add_hline(y=moderate_threshold, line_dash="dash", line_color=MUTED,
                   annotation_text=f"Moderate {moderate_threshold:g}%")
-    st.plotly_chart(styled_figure(fig), width="stretch", key=f"matrix_{fid}")
+    st.plotly_chart(styled_figure(fig), use_container_width=True, key=f"matrix_{fid}")
     st.caption("Bottom-left items warrant the closest review: relatively low service and low consumption.")
     table_cols = ["display_name", "category", "loaded_quantity", "served_quantity", "service_rate_pct", "average_consumed_pct", "observation_count", "unserved_mass_kg", "consumption_waste_kg", "food_value_waste_eur"]
     st.dataframe(
         filtered[table_cols], column_config=table_column_config(table_cols),
-        hide_index=True, width="stretch",
+        hide_index=True, use_container_width=True,
     )
     st.download_button("Download filtered analysis (CSV)", export_csv(filtered[table_cols]), f"fsair_{fid}_items.csv", "text/csv", key=f"download_items_{fid}")
 
@@ -354,12 +364,12 @@ def render_consumption_detail(bundle, primary_id, comparison_id):
         hovertemplate="%{y}<br>%{x}<br>%{z:.1f}% · %{customdata} observations<extra></extra>",
         colorscale=[[0, "#F8FAFC"], [1, BLUE]], zmin=0,
     ))
-    st.plotly_chart(styled_figure(fig, max(390, 32 * len(heatmap))), width="stretch", key="consumption_heatmap")
+    st.plotly_chart(styled_figure(fig, max(390, 32 * len(heatmap))), use_container_width=True, key="consumption_heatmap")
     with st.expander("Accessible distribution table"):
         overview_columns = ["display_name", "consumption_band", "share_pct", "observation_count"]
         st.dataframe(
             overview[overview_columns], column_config=table_column_config(overview_columns),
-            hide_index=True, width="stretch",
+            hide_index=True, use_container_width=True,
         )
 
     available = primary.summary[
@@ -412,7 +422,7 @@ def render_consumption_detail(bundle, primary_id, comparison_id):
         labels={"consumption_band": "Consumption band", "share_pct": "Observations (%)", "flight_role": "Flight role"},
     )
     fig.update_traces(hovertemplate="%{x}<br>%{y:.1f}% · %{customdata[0]} observations<extra>%{fullData.name}</extra>")
-    st.plotly_chart(styled_figure(fig, 410), width="stretch", key="consumption_distribution")
+    st.plotly_chart(styled_figure(fig, 410), use_container_width=True, key="consumption_distribution")
     if comparison_id:
         other = summaries[1][1]
         if other.observation_count == 0:
@@ -434,7 +444,7 @@ def render_consumption_detail(bundle, primary_id, comparison_id):
     with st.expander("Observation-level records"):
         st.dataframe(
             detail, column_config=table_column_config(detail.columns),
-            hide_index=True, width="stretch",
+            hide_index=True, use_container_width=True,
         )
         st.download_button(
             "Download observations (CSV)", export_csv(detail),
@@ -500,7 +510,7 @@ def render_recommendations(bundle, fid, role, show_co2_effect=False):
     }
     st.dataframe(shown[shown_columns],
                  column_config=table_column_config(shown_columns, recommendation_labels),
-                 hide_index=True, width="stretch")
+                 hide_index=True, use_container_width=True)
     st.download_button("Download full recommendations (CSV)", export_csv(recs), f"fsair_{fid}_recommendations.csv", "text/csv", key=f"download_recs_{fid}")
 
 
@@ -514,9 +524,18 @@ def render_dashboard(bundle: DataBundle) -> None:
         st.session_state.nav = "Command Center"
 
     with st.sidebar:
-        st.markdown("# ✈ FSAIR")
-        st.caption("AI-assisted airline catering insights")
-        page = st.radio("Workspace", ["Command Center", "Flight Detail", "Item Analysis", "Consumption Detail", "Recommendations"], key="nav")
+        st.markdown(
+            '<div class="sidebar-brand"><div class="sidebar-brand-name">✈ FSAIR</div>'
+            '<div class="sidebar-brand-subtitle">AI-assisted airline catering insights</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown('<div class="sidebar-section-label">Navigation</div>', unsafe_allow_html=True)
+        page = st.radio(
+            "Workspace",
+            ["Command Center", "Flight Detail", "Item Analysis", "Consumption Detail", "Recommendations"],
+            key="nav",
+            label_visibility="collapsed",
+        )
         st.divider()
         directions = st.multiselect("Direction", sorted(flights.direction.unique()), default=sorted(flights.direction.unique()))
         periods = st.multiselect("Departure period", ["Day", "Night"], default=["Day", "Night"])
@@ -554,7 +573,7 @@ def render_dashboard(bundle: DataBundle) -> None:
                         a, b = st.columns(2)
                         a.metric("Service rate", f"{fs['service_rate_pct']:.1f}%")
                         b.metric("Consumption waste", f"{fs['consumption_waste_kg']:.1f} kg")
-                        st.button("Open flight detail", key=f"open_{row.flight_id}", type="primary", width="stretch",
+                        st.button("Open flight detail", key=f"open_{row.flight_id}", type="primary", use_container_width=True,
                                   on_click=open_flight, args=(row.flight_id,))
         st.subheader("Cross-flight trend")
         trend_rows = []
@@ -569,7 +588,7 @@ def render_dashboard(bundle: DataBundle) -> None:
         fig.add_scatter(x=trend.Date, y=trend["Consumption waste per 100 passengers (kg)"], mode="lines+markers", name="Consumption waste / 100 passengers",
                         yaxis="y2", line=dict(color=AMBER, width=3))
         fig.update_layout(yaxis=dict(title="Service rate (%)"), yaxis2=dict(title="Consumption waste / 100 passengers (kg)", overlaying="y", side="right"))
-        st.plotly_chart(styled_figure(fig, 330), width="stretch", key="trend")
+        st.plotly_chart(styled_figure(fig, 330), use_container_width=True, key="trend")
         st.caption("Four simulated Flight Services provide only an illustrative trend; more history is required for seasonality or forecasting.")
     
     elif page == "Flight Detail":
@@ -593,7 +612,7 @@ def render_dashboard(bundle: DataBundle) -> None:
             st.dataframe(
                 comparison,
                 column_config=table_column_config(comparison.columns, formats={"delta": "%.1f"}),
-                hide_index=True, width="stretch",
+                hide_index=True, use_container_width=True,
             )
         assumptions_panel(bundle)
     
@@ -614,7 +633,7 @@ def render_dashboard(bundle: DataBundle) -> None:
             item_comparison = calculate_item_comparison(bundle, selected_id, comparison_id)
             st.dataframe(
                 item_comparison, column_config=table_column_config(item_comparison.columns),
-                hide_index=True, width="stretch",
+                hide_index=True, use_container_width=True,
             )
     
     elif page == "Consumption Detail":

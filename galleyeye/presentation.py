@@ -1,5 +1,7 @@
 """Display-only formatting helpers; domain values stay full precision."""
 
+from __future__ import annotations
+
 import pandas as pd
 
 

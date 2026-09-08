@@ -18,14 +18,16 @@ def test_sidebar_is_a_primary_colored_navigation_surface():
     assert '[data-testid="stSidebarUserContent"]' in DASHBOARD_SOURCE
     assert 'background:{SIDEBAR_BLUE}' in DASHBOARD_SOURCE
     assert 'SIDEBAR_BLUE = "#0F172A"' in DASHBOARD_SOURCE
-    assert 'SIDEBAR_HOVER = "#1E293B"' in DASHBOARD_SOURCE
-    assert 'SIDEBAR_SELECTED = "#1D4ED8"' in DASHBOARD_SOURCE
+    assert 'SIDEBAR_HOVER = "#25334A"' in DASHBOARD_SOURCE
+    assert 'SIDEBAR_SELECTED = "#2563EB"' in DASHBOARD_SOURCE
     assert 'SIDEBAR_FOREGROUND = "#F8FAFC"' in DASHBOARD_SOURCE
     assert '.st-key-nav [role="radiogroup"] label:hover' in DASHBOARD_SOURCE
     assert 'label:has(input:checked)' in DASHBOARD_SOURCE
     assert 'background:{SIDEBAR_SELECTED}' in DASHBOARD_SOURCE
     assert 'label:focus-within' in DASHBOARD_SOURCE
-    assert 'input[type="radio"] + div {{display:none}}' in DASHBOARD_SOURCE
+    assert 'label > div:first-child {{flex:0 0 auto}}' in DASHBOARD_SOURCE
+    assert 'label_visibility="collapsed"' in DASHBOARD_SOURCE
+    assert 'sidebar-section-label">Navigation' in DASHBOARD_SOURCE
 
 
 def test_dashboard_styles_are_emitted_during_each_render():

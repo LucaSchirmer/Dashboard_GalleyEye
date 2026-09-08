@@ -45,7 +45,7 @@ def test_analysis_pages_render_primary_and_secondary_flights_side_by_side():
     comparison.set_value(original_primary).run()
     assert not at.exception
     assert len([x for x in at.multiselect if x.label=="Categories"])==2
-    assert len([x for x in at.download_button if x.label=="Download filtered analysis (CSV)"])==2
+    assert len([x for x in at.get("download_button") if x.label=="Download filtered analysis (CSV)"])==2
     assert any(x.value=="Selected-versus-comparison item deltas" for x in at.subheader)
     item_delta=next(frame.value for frame in at.dataframe if "service_rate_delta_pp" in frame.value.columns)
     assert "loaded_quantity_delta_per_100" in item_delta.columns
@@ -55,7 +55,7 @@ def test_analysis_pages_render_primary_and_secondary_flights_side_by_side():
     assert [box.label for box in at.selectbox].count("Compare with (optional)")==1
     assert [box.label for box in at.selectbox].count("Served item")==2
     assert len([x for x in at.subheader if x.value=="Scenario planner"])==2
-    assert len([x for x in at.download_button if x.label=="Download full recommendations (CSV)"])==2
+    assert len([x for x in at.get("download_button") if x.label=="Download full recommendations (CSV)"])==2
     portion_sliders=[slider for slider in at.slider if slider.label=="Portion reduction" and not slider.disabled]
     assert portion_sliders and all(slider.max==90 for slider in portion_sliders)
     assert any("Prototype arithmetic bounds" in x.value for x in at.caption)
@@ -94,7 +94,7 @@ def test_consumption_detail_renders_filters_comparison_binary_and_export():
     assert next(box for box in at.selectbox if box.label=="Served item").value=="wrap"
     assert len(at.get("plotly_chart"))==2
     assert any(metric.label=="Observations" for metric in at.metric)
-    assert any(button.label=="Download observations (CSV)" for button in at.download_button)
+    assert any(button.label=="Download observations (CSV)" for button in at.get("download_button"))
 
     comparison=next(box for box in at.selectbox if box.label=="Compare with (optional)")
     comparison.set_value("FRA-HND-2026-07-18-GE101").run()
